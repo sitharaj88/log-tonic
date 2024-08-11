@@ -1,0 +1,36 @@
+{
+  "name": "log-tonic",
+  "version": "1.0.0",
+  "description": "A powerful and flexible logging utility for Node.js and TypeScript projects.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sitharaj88/log-tonic.git"
+  },
+  "keywords": [
+    "logger",
+    "logging",
+    "typescript",
+    "nodejs",
+    "utility",
+    "log-tonic"
+  ],
+  "author": "Sitharaj Seenivasan",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/sitharaj88/log-tonic/issues"
+  },
+  "homepage": "https://github.com/sitharaj88/log-tonic#readme",
+  "dependencies": {
+    "date-fns": "^2.29.3"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.4"
+  }
+}
