@@ -14,5 +14,7 @@
  * Copyright 2024 Sitharaj Seenivasan 
  */
 
-export { LoggerFactory, LoggerConfig } from './loggerFactory';
+export * from './types';
+export * from './transports';
+export { LoggerFactory } from './loggerFactory';
 export { default as Logger } from './logger';

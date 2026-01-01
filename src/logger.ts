@@ -15,117 +15,86 @@
  */
 
 import { format } from 'date-fns';
+import { LoggerConfig, LogLevel, LogLevelPriority, LogEntry, Transport } from './types';
+import { ConsoleTransport } from './transports';
 
 /**
- * Logger class responsible for handling log messages with different levels and features.
+ * Enterprise-grade Logger class.
+ * Supports multiple transports, structured logging, and configurable formatting.
  *
  * @class Logger
  */
 class Logger {
-  private level: string;
-  private appName: string;
-  private timeFormat: string;
-  private messageFormat: { prefix?: string; suffix?: string } | null;
-  private levels: { [key: string]: number };
+  private config: LoggerConfig;
+  private transports: Transport[];
 
   /**
    * Constructs a Logger instance.
    *
-   * @param {string} level - The logging level (debug, info, error).
-   * @param {string} [appName] - The name of the application.
-   * @param {string} [timeFormat] - The format for the timestamp.
-   * @param {Object} [messageFormat] - The prefix and suffix for log messages.
+   * @param {LoggerConfig} config - Configuration object.
    */
-  constructor(
-    level: string,
-    appName?: string,
-    timeFormat?: string,
-    messageFormat?: { prefix?: string; suffix?: string }
-  ) {
-    this.level = level;
-    this.appName = appName || "MyApp";
-    this.timeFormat = timeFormat || "YYYY-MM-DD HH:mm:ss";
-    this.messageFormat = messageFormat || null;
-    this.levels = { debug: 0, info: 1, error: 2 };
+  constructor(config: LoggerConfig) {
+    this.config = config;
+    this.transports = config.transports && config.transports.length > 0
+      ? config.transports
+      : [new ConsoleTransport()];
   }
 
-/**
- * Formats the current timestamp according to the specified time format using date-fns.
- * 
- * @returns {string} The formatted timestamp.
- */
-private formatTime(): string {
-  const now = new Date();
-
-  try {
-    return format(now, this.timeFormat);
-  } catch (error) {
-    console.warn(`Invalid time format provided: ${this.timeFormat}. Falling back to default ISO format.`);
-    return now.toISOString().replace("T", " ").split(".")[0]; // Fallback to ISO format
+  private formatTime(): string {
+    const now = new Date();
+    try {
+      return format(now, this.config.timeFormat || "yyyy-MM-dd HH:mm:ss");
+    } catch (error) {
+      return now.toISOString();
+    }
   }
-}
-  /**
-   * Formats the log message by adding the specified prefix and suffix.
-   *
-   * @param {string} message - The log message.
-   * @returns {string} The formatted log message.
-   */
+
   private formatMessage(message: string): string {
-    if (this.messageFormat) {
-      return `${this.messageFormat.prefix || ""}${message}${
-        this.messageFormat.suffix || ""
-      }`;
+    const { prefix, suffix } = this.config.messageFormat || {};
+    return `${prefix || ""}${message}${suffix || ""}`;
+  }
+
+  private log(level: LogLevel, feature: string, message: string, meta?: Record<string, any>): void {
+    if (LogLevelPriority[level] < LogLevelPriority[this.config.minLevel]) {
+      return;
     }
-    return message;
-  }
 
-  /**
-   * Logs a message with the specified level and feature.
-   *
-   * @param {string} level - The logging level (debug, info, error).
-   * @param {string} feature - The feature name associated with the log message.
-   * @param {string} message - The log message.
-   */
-  private log(level: string, feature: string, message: string): void {
-    if (this.levels[level] >= this.levels[this.level]) {
-      const timestamp = this.formatTime();
-      const formattedMessage = this.formatMessage(message);
-      console.log(
-        `${timestamp} [${
-          this.appName
-        }] [${feature}] ${level.toUpperCase()}: ${formattedMessage}`
-      );
+    const entry: LogEntry = {
+      timestamp: this.formatTime(),
+      level,
+      appName: this.config.appName || "MyApp",
+      feature,
+      message: this.formatMessage(message),
+      meta,
+    };
+
+    for (const transport of this.transports) {
+      try {
+        transport.log(entry);
+      } catch (e) {
+        console.error("Failed to log to transport:", e);
+      }
     }
   }
 
-  /**
-   * Logs an informational message.
-   *
-   * @param {string} feature - The feature name associated with the log message.
-   * @param {string} message - The log message.
-   */
-  public info(feature: string, message: string): void {
-    this.log("info", feature, message);
+  public debug(feature: string, message: string, meta?: Record<string, any>): void {
+    this.log(LogLevel.DEBUG, feature, message, meta);
   }
 
-  /**
-   * Logs an error message.
-   *
-   * @param {string} feature - The feature name associated with the log message.
-   * @param {string} message - The log message.
-   */
-  public error(feature: string, message: string): void {
-    this.log("error", feature, message);
+  public info(feature: string, message: string, meta?: Record<string, any>): void {
+    this.log(LogLevel.INFO, feature, message, meta);
   }
 
-  /**
-   * Logs a debug message.
-   *
-   * @param {string} feature - The feature name associated with the log message.
-   * @param {string} message - The log message.
-   */
-  public debug(feature: string, message: string): void {
-    this.log("debug", feature, message);
+  public warn(feature: string, message: string, meta?: Record<string, any>): void {
+    this.log(LogLevel.WARN, feature, message, meta);
+  }
+
+  public error(feature: string, message: string, meta?: Record<string, any>): void {
+    this.log(LogLevel.ERROR, feature, message, meta);
+  }
+
+  public fatal(feature: string, message: string, meta?: Record<string, any>): void {
+    this.log(LogLevel.FATAL, feature, message, meta);
   }
 }
 

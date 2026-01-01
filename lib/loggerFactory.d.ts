@@ -12,21 +12,9 @@
  * limitations under the License.
  *
  * Copyright 2024 Sitharaj Seenivasan
-
  */
 import Logger from "./logger";
-/**
- * Interface representing the configuration options for the Logger.
- */
-export interface LoggerConfig {
-    level: "debug" | "info" | "error";
-    appName?: string;
-    timeFormat?: string;
-    messageFormat?: {
-        prefix?: string;
-        suffix?: string;
-    };
-}
+import { LoggerConfig } from "./types";
 /**
  * LoggerFactory class responsible for creating and managing Logger instances.
  *
@@ -45,11 +33,13 @@ export declare class LoggerFactory {
      * Creates a logger for the specified feature.
      *
      * @param {string} feature - The feature name for which to create the logger.
-     * @returns {Object} An object containing methods for logging info, error, and debug messages.
+     * @returns {Object} An object containing methods for logging.
      */
     static createLogger(feature: string): {
-        info: (message: string) => void;
-        error: (message: string) => void;
-        debug: (message: string) => void;
+        debug: (message: string, meta?: Record<string, any>) => void;
+        info: (message: string, meta?: Record<string, any>) => void;
+        warn: (message: string, meta?: Record<string, any>) => void;
+        error: (message: string, meta?: Record<string, any>) => void;
+        fatal: (message: string, meta?: Record<string, any>) => void;
     };
 }

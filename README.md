@@ -1,15 +1,15 @@
 
 # Log-Tonic
 
-**Log-Tonic** is a powerful and flexible logging utility for Node.js and TypeScript projects. It allows you to easily manage and format log messages across different features or modules within your application, with customizable prefixes, suffixes, and time formats.
+**Log-Tonic** is an enterprise-grade, flexible logging utility for Node.js and TypeScript projects. It supports structured JSON logging, multiple transports (Console, File, etc.), log levels, and customizable formatting.
 
 ## Features
 
-- **Easy Initialization**: Initialize once with global settings for your entire application.
-- **Feature-Specific Logging**: Create loggers tailored for specific features or modules.
-- **Customizable Message Format**: Add optional prefixes and suffixes to log messages for better readability.
-- **Support for Multiple Log Levels**: Includes support for `debug`, `info`, and `error` log levels.
-- **TypeScript Support**: Fully typed with `.d.ts` files included for better integration in TypeScript projects.
+- **Enterprise Ready**: Structured JSON logging out of the box for easy ingestion by tools like Splunk, ELK, etc.
+- **Transport System**: Modular transport system. Writes to Console by default, but extensible to File, HTTP, etc.
+- **Rich Log Levels**: Support for `debug`, `info`, `warn`, `error`, and `fatal`.
+- **Feature-Specific Logging**: Create scoped loggers for different modules or features.
+- **TypeScript Support**: Built with TypeScript for full type safety.
 
 ## Installation
 
@@ -26,13 +26,17 @@ npm install log-tonic
 Initialize the logger at the start of your application with the desired configuration:
 
 ```typescript
-import { LoggerFactory } from 'log-tonic';
+import { LoggerFactory, ConsoleTransport, LogLevel } from 'log-tonic';
 
 LoggerFactory.initialize({
-  level: 'debug',
-  appName: 'MyApp',
-  timeFormat: 'yyyy-MM-dd HH:mm:ss', // Custom time format using date-fns
-  messageFormat: { prefix: '--> INFO: ', suffix: ' <-- END' } // Optional custom prefix and suffix
+  minLevel: LogLevel.DEBUG,
+  appName: 'MyEnterpriseApp',
+  transports: [
+    new ConsoleTransport({ 
+      useJson: true, // Enable structured JSON logging
+      useColor: true // Enable colors for non-JSON output 
+    })
+  ]
 });
 ```
 
@@ -43,32 +47,80 @@ Create a logger for a specific feature or module within your application:
 ```typescript
 const authLogger = LoggerFactory.createLogger('AuthService');
 
-authLogger.info('User login successful');
-authLogger.error('User login failed');
-authLogger.debug('User login attempt with username "admin"');
+// Pass metadata object as the second argument
+authLogger.info('User login successful', { userId: '12345', role: 'admin' });
+authLogger.error('Login failed', { error: 'Invalid credentials' });
 ```
 
-### 3. Available Configuration Options
+### 3. Log Levels
 
-- **level**: Sets the global log level. Available options are `debug`, `info`, `error`.
-- **appName**: The name of your application (default is `MyApp`).
-- **timeFormat**: The format for timestamps, using date-fns format tokens (e.g., `yyyy-MM-dd HH:mm:ss`).
-- **messageFormat**: Optionally set `prefix` and `suffix` to wrap your log messages (e.g., `{ prefix: '--> INFO: ', suffix: ' <-- END' }`).
+Available log levels in order of priority:
+1. `DEBUG`
+2. `INFO`
+3. `WARN`
+4. `ERROR`
+5. `FATAL`
 
-## Example
+### 4. Custom Transports
+
+You can create custom transports by implementing the `Transport` interface:
 
 ```typescript
-const paymentLogger = LoggerFactory.createLogger('PaymentService');
+import { Transport, LogEntry } from 'log-tonic';
 
-paymentLogger.info('Payment processed successfully');
-paymentLogger.error('Payment failed');
-paymentLogger.debug('Processing payment for user ID 123');
+class MyCustomTransport implements Transport {
+  log(entry: LogEntry): void {
+    // Send log to external service
+    console.log('Sending to cloud:', entry);
+  }
+}
 ```
 
-This example will produce logs formatted like:
+## Migration Guide (v1.0.x -> v1.1.0)
 
+If you are upgrading from `v1.0.1` or earlier, there are some breaking changes to support the new enterprise features.
+
+### 1. Initialization Changes
+
+The `level` property has been renamed to `minLevel` and now accepts a `LogLevel` enum instead of a string.
+
+**v1.0.0 (Old):**
+```typescript
+LoggerFactory.initialize({
+  level: 'debug',
+  appName: 'MyApp'
+});
 ```
-2024-08-11 13:45:30 [MyApp] [PaymentService] INFO: --> INFO: Payment processed successfully <-- END
+
+**v1.1.0 (New):**
+```typescript
+import { LoggerFactory, LogLevel } from 'log-tonic';
+
+LoggerFactory.initialize({
+  minLevel: LogLevel.DEBUG, // Changed from string to Enum
+  appName: 'MyApp'
+  // Transports are optional, defaults to ConsoleTransport
+});
+```
+
+### 2. Log Levels
+
+We have moved from strict string types to an Enum for better type safety and added new levels.
+
+- Old: `'debug'`, `'info'`, `'error'`
+- New: `LogLevel.DEBUG`, `LogLevel.INFO`, `LogLevel.WARN`, `LogLevel.ERROR`, `LogLevel.FATAL`
+
+### 3. Creating Loggers
+
+`createLogger` remains largely valid, but methods now support metadata objects.
+
+```typescript
+// v1.0.0
+logger.info('Message');
+
+// v1.1.0
+logger.info('Message'); // Still works
+logger.info('Message', { meta: 'data' }); // New capability
 ```
 
 ## Contributing

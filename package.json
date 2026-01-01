@@ -1,9 +1,12 @@
 {
   "name": "log-tonic",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "A powerful and flexible logging utility for Node.js and TypeScript projects.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "tsc",
     "prepublishOnly": "npm run build",

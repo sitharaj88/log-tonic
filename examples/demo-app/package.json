@@ -1,0 +1,13 @@
+{
+    "name": "log-tonic-demo",
+    "version": "1.0.0",
+    "description": "Demo application for log-tonic",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "dependencies": {
+        "log-tonic": "file:../../"
+    },
+    "private": true
+}

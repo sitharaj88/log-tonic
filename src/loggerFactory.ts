@@ -12,20 +12,10 @@
  * limitations under the License.
  * 
  * Copyright 2024 Sitharaj Seenivasan 
-
  */
 
 import Logger from "./logger";
-
-/**
- * Interface representing the configuration options for the Logger.
- */
-export interface LoggerConfig {
-  level: "debug" | "info" | "error";
-  appName?: string;
-  timeFormat?: string;
-  messageFormat?: { prefix?: string; suffix?: string };
-}
+import { LoggerConfig } from "./types";
 
 /**
  * LoggerFactory class responsible for creating and managing Logger instances.
@@ -43,12 +33,7 @@ export class LoggerFactory {
    */
   public static initialize(config: LoggerConfig): Logger {
     if (!LoggerFactory.loggerInstance) {
-      LoggerFactory.loggerInstance = new Logger(
-        config.level,
-        config.appName,
-        config.timeFormat,
-        config.messageFormat
-      );
+      LoggerFactory.loggerInstance = new Logger(config);
     }
     return LoggerFactory.loggerInstance;
   }
@@ -57,7 +42,7 @@ export class LoggerFactory {
    * Creates a logger for the specified feature.
    *
    * @param {string} feature - The feature name for which to create the logger.
-   * @returns {Object} An object containing methods for logging info, error, and debug messages.
+   * @returns {Object} An object containing methods for logging.
    */
   public static createLogger(feature: string) {
     if (!LoggerFactory.loggerInstance) {
@@ -66,12 +51,16 @@ export class LoggerFactory {
       );
     }
     return {
-      info: (message: string) =>
-        LoggerFactory.loggerInstance!.info(feature, message),
-      error: (message: string) =>
-        LoggerFactory.loggerInstance!.error(feature, message),
-      debug: (message: string) =>
-        LoggerFactory.loggerInstance!.debug(feature, message),
+      debug: (message: string, meta?: Record<string, any>) =>
+        LoggerFactory.loggerInstance!.debug(feature, message, meta),
+      info: (message: string, meta?: Record<string, any>) =>
+        LoggerFactory.loggerInstance!.info(feature, message, meta),
+      warn: (message: string, meta?: Record<string, any>) =>
+        LoggerFactory.loggerInstance!.warn(feature, message, meta),
+      error: (message: string, meta?: Record<string, any>) =>
+        LoggerFactory.loggerInstance!.error(feature, message, meta),
+      fatal: (message: string, meta?: Record<string, any>) =>
+        LoggerFactory.loggerInstance!.fatal(feature, message, meta),
     };
   }
 }

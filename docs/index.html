@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log-Tonic | Enterprise Logger for Node.js</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">Log-Tonic 🍹</div>
+        <div class="links">
+            <a href="#features">Features</a>
+            <a href="#usage">Usage</a>
+            <a href="#migration">Migration</a>
+            <a href="https://github.com/sitharaj88/log-tonic" target="_blank" class="github-link">GitHub</a>
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+                <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Refreshing Logs for<br>Modern Applications</h1>
+            <p>An enterprise-grade, structured logging utility for Node.js and TypeScript.</p>
+            <div class="cta-group">
+                <div class="npm-install">
+                    <code>npm install log-tonic</code>
+                    <button class="copy-btn" onclick="copyInstall()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
+                </div>
+                <a href="#usage" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="code-window">
+                <div class="window-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                </div>
+                <div class="window-body">
+                    <div class="log-line"><span class="ts">[2024-01-01 10:00:01]</span> <span class="blue">INFO</span>:
+                        App started</div>
+                    <div class="log-line"><span class="ts">[2024-01-01 10:00:02]</span> <span
+                            class="green">DEBUG</span>: Connecting DB...</div>
+                    <div class="log-line"><span class="ts">[2024-01-01 10:00:05]</span> <span
+                            class="yellow">WARN</span>: Retrying connection</div>
+                    <div class="log-line"><span class="ts">[2024-01-01 10:00:05]</span> <span class="red">ERROR</span>:
+                        Connection failed!</div>
+                    <br>
+                    <div class="typing-cursor">_</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="features" class="features">
+        <h2>Why Log-Tonic?</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="icon">🚀</div>
+                <h3>Enterprise Ready</h3>
+                <p>Structured JSON logging out of the box. Ready for ELK, Splunk, and Datadog.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🚅</div>
+                <h3>High Performance</h3>
+                <p>Minimal overhead with async capabilities and optimized transport streams.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">🎨</div>
+                <h3>Beautiful Output</h3>
+                <p>Color-coded console logs for development, JSON for production.</p>
+            </div>
+            <div class="feature-card">
+                <div class="icon">📘</div>
+                <h3>TypeScript First</h3>
+                <p>Built with TS. First-class type definitions and strict typing included.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="usage" class="usage">
+        <h2>Quick Start</h2>
+        <div class="usage-container">
+            <div class="code-panel">
+                <div class="panel-header">src/logger.ts</div>
+                <pre><code class="language-typescript">import { LoggerFactory, LogLevel, ConsoleTransport } from 'log-tonic';
+
+// Initialize Global Config
+LoggerFactory.initialize({
+  minLevel: LogLevel.DEBUG,
+  appName: 'MySuperApp',
+  transports: [
+    new ConsoleTransport({ useJson: true }) 
+  ]
+});
+
+const logger = LoggerFactory.createLogger('AuthService');
+
+// Log with metadata
+logger.info('User logged in', { 
+  userId: 'u-123', 
+  session: 's-456' 
+});</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section id="migration" class="usage" style="background: var(--bg-color);">
+        <h2>Migration Guide (v1.0.x -> v1.1.0)</h2>
+        <div class="usage-container">
+            <div class="feature-card" style="margin-bottom: 2rem;">
+                <h3>⚠️ Breaking Changes</h3>
+                <p>Version 1.1.0 introduces structured types and enterprise transports. To upgrade from v1.0.1:</p>
+                <ul style="padding-left: 20px; margin-top: 10px; color: var(--text-secondary);">
+                    <li>Change <code>level</code> (string) to <code>minLevel</code> (Enum).</li>
+                    <li>Import <code>LogLevel</code> from the package.</li>
+                    <li>Replace string levels (e.g. "debug") with Enums (e.g. <code>LogLevel.DEBUG</code>).</li>
+                </ul>
+            </div>
+
+            <div class="code-panel">
+                <div class="panel-header">Migration Example</div>
+                <pre><code class="language-typescript">// ❌ Old (v1.0)
+LoggerFactory.initialize({
+  level: 'debug',
+  appName: 'App'
+});
+
+// ✅ New (v1.1)
+import { LoggerFactory, LogLevel } from 'log-tonic';
+
+LoggerFactory.initialize({
+  minLevel: LogLevel.DEBUG, // Enum required
+  appName: 'App'
+});</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>Log-Tonic &copy; 2026. Made with 💻 and ☕ by Sitharaj.</p>
+        <p>Licensed under Apache-2.0</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
