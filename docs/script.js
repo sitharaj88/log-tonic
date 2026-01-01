@@ -22,6 +22,24 @@ toggleBtn.addEventListener('click', () => {
     localStorage.setItem('theme', newTheme);
 });
 
+// Hamburger Menu Toggle
+const menuToggle = document.getElementById('menu-toggle');
+const navLinks = document.getElementById('nav-links');
+
+menuToggle.addEventListener('click', () => {
+    menuToggle.classList.toggle('active');
+    navLinks.classList.toggle('active');
+});
+
+// Close menu when a link is clicked
+navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        menuToggle.classList.remove('active');
+        navLinks.classList.remove('active');
+    });
+});
+
+
 function copyInstall() {
     navigator.clipboard.writeText('npm install log-tonic');
     const btn = document.querySelector('.copy-btn');

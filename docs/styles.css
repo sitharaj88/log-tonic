@@ -87,7 +87,39 @@ body {
     padding: 0.5rem 1rem;
     border-radius: 6px;
     margin-right: 1.5rem;
-    /* Add margin for toggle */
+}
+
+/* Hamburger Menu Button */
+.menu-toggle {
+    display: none;
+    /* Hidden on desktop */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    z-index: 1001;
+}
+
+.hamburger-line {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: var(--text-primary);
+    margin: 5px 0;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+/* Hamburger to X animation when open */
+.menu-toggle.active .hamburger-line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.menu-toggle.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active .hamburger-line:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
 }
 
 /* Toggle Button */
@@ -445,41 +477,58 @@ footer {
 
 @media (max-width: 768px) {
     .navbar {
-        flex-direction: column;
-        padding: 1rem;
-        gap: 1rem;
+        flex-wrap: wrap;
+        padding: 1rem 5%;
+    }
+
+    .menu-toggle {
+        display: block;
+        /* Show hamburger on mobile */
     }
 
     .links {
+        display: none;
+        /* Hidden by default on mobile */
         width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        /* Better than margin-left for wrap */
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        margin-top: 1rem;
+    }
+
+    .links.active {
+        display: flex;
+        /* Show when toggled */
     }
 
     .links a {
         margin-left: 0;
-        font-size: 0.95rem;
-        padding: 0.5rem 0.75rem;
-        /* Better touch target */
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
         border-radius: 6px;
+        text-align: center;
     }
 
     .links a:hover {
         background: var(--card-bg);
-        /* Visual feedback on touch/hover */
     }
 
     .github-link {
         margin-right: 0;
         margin-left: 0 !important;
-        /* Force reset */
+        border: none;
+        /* Remove border for cleaner look in mobile menu */
+    }
+
+    .theme-toggle {
+        margin: 0.5rem auto;
+        /* Center the toggle */
     }
 
     .hero {
-        padding: 8rem 1rem 3rem;
-        /* Reduce side padding */
+        padding: 7rem 1rem 3rem;
     }
 
     .hero h1 {
@@ -510,7 +559,6 @@ footer {
     .features,
     .usage {
         padding: 4rem 1.5rem;
-        /* Reduce padding */
     }
 
     .features h2,
@@ -521,30 +569,25 @@ footer {
 
     .feature-grid {
         grid-template-columns: 1fr;
-        /* Stack cards */
     }
 
     pre {
         font-size: 0.85rem !important;
-        /* Smaller code font */
         padding: 15px !important;
     }
 }
 
 @media (max-width: 480px) {
     .hero h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
 
     .navbar {
-        padding: 0.8rem;
-    }
-
-    .links {
-        gap: 0.8rem;
+        padding: 0.8rem 4%;
     }
 
     .links a {
-        font-size: 0.85rem;
+        font-size: 0.95rem;
+        padding: 0.65rem 0.8rem;
     }
 }
