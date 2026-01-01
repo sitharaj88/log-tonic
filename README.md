@@ -141,3 +141,4 @@ Log-Tonic is licensed under the Apache License, Version 2.0. See the [LICENSE](L
 
 - [GitHub Repository](https://github.com/sitharaj88/log-tonic)
 - [npm Package](https://www.npmjs.com/package/log-tonic)
+- [Documentation](https://sitharaj88.github.io/log-tonic/)
